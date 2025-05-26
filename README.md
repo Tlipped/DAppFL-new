@@ -4,7 +4,10 @@ A basic implementation of "DAppFL: Just-in-Time Fault Localization for Decentral
 
 # Installation
 
-Please ensure that your Python version is above 3.9 :)
+Please ensure:
+- Python == 3.9
+- Node.js == 20.9
+
 And use following commands to install the dependency of DAppFL:
 
 ```shell
