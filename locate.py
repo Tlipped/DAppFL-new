@@ -64,18 +64,32 @@ def locate(
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--fault_txhash', type=str, required=True)
-    parser.add_argument('--faultless_txhash', type=str, required=True)
-    parser.add_argument('--net', type=str, default='Ethereum')
-    parser.add_argument('--model_path', type=str, default='misc/model.pth')
-    parser.add_argument('--p_norm', type=int, default=6)
-    args = parser.parse_args()
+    # parser = argparse.ArgumentParser()
+    # parser.add_argument('--fault_txhash', type=str, required=True)
+    # parser.add_argument('--faultless_txhash', type=str, required=True)
+    # parser.add_argument('--net', type=str, default='Ethereum')
+    # parser.add_argument('--model_path', type=str, default='misc/model.pth')
+    # parser.add_argument('--p_norm', type=int, default=6)
+    # args = parser.parse_args()
+    #
+    # locate(
+    #     fault_txhash=args.fault_txhash.split(','),
+    #     faultless_txhash=args.faultless_txhash.split(','),
+    #     net=args.net,
+    #     model_path=args.model_path,
+    #     p_norm=args.p_norm,
+    # )
 
+
+    # 临时硬编码参数用于调试
     locate(
-        fault_txhash=args.fault_txhash.split(','),
-        faultless_txhash=args.faultless_txhash.split(','),
-        net=args.net,
-        model_path=args.model_path,
-        p_norm=args.p_norm,
+        fault_txhash=['0x90fb0c9976361f537330a5617a404045ffb3fef5972cf67b531386014eeae7a9'],
+        faultless_txhash=[
+            '0x7df39084b561ee2e7809e690f11e8e258dc65b6128399acbacf1f2433308de6a',
+            '0xddd734c1f3e097d3d1cdd7d4c0ffae166b39992a1d055008bf6660b8c0b7582e',
+            '0x5c1d151599bbacc19a09dfee888d3be2ccf3e2fa781679b9e0970e18b3300e44'
+        ],
+        net='Ethereum',
+        model_path='misc/model.pth',
+        p_norm=6,
     )

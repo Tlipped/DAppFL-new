@@ -80,24 +80,50 @@ def _eval_residual(
 
 if __name__ == '__main__':
     g = nx.DiGraph()
-    g.add_edges_from([
-        ('A', 'C', {'weight': 0.3}),
-        ('A', 'D', {'weight': 0.3}),
-        ('A', 'E', {'weight': 0.3}),
-        ('C', 'B', {'weight': 1.0}),
-        ('D', 'F', {'weight': 1.0}),
-        ('F', 'B', {'weight': 1.0}),
-        ('E', 'G', {'weight': 1.0}),
-        ('G', 'F', {'weight': 0.2}),
-        ('G', 'H', {'weight': 0.8}),
-        ('H', 'B', {'weight': 1.0}),
-    ])
-    sources = {'B'}
-    x = leak_diffusion(g, sources)
-    print(x)
 
-    top_k = 5
-    x_rank = sorted(list(x.items()), key=lambda item: item[1], reverse=True)
-    sub_g = g.subgraph([node for node, _ in x_rank[:top_k]])
-    for u, v, attr in sub_g.edges(data=True):
-        print('{}->{}, {}'.format(u, v, attr))
+    # === 攻击路径 1：直接快速到账（大额）===
+    g.add_edge('Vault', 'Tx1', weight=90)
+    g.add_edge('Tx1', 'Attacker', weight=90)
+
+    # === 攻击路径 2：绕道混币器（小额）===
+    g.add_edge('Vault', 'Tx2', weight=10)
+    g.add_edge('Tx2', 'Mixer', weight=10)
+    g.add_edge('Mixer', 'Attacker', weight=10)
+
+    # === 正常用户（完全隔离）===
+    g.add_edge('Vault', 'UserTx', weight=1)
+    g.add_edge('UserTx', 'UserWallet', weight=1)
+
+    sources = {'Attacker'}  # 只监控攻击者钱包
+
+    scores = leak_diffusion(g, sources, gamma=0.05, epsilon=1e-5)
+
+    print("泄漏分数（越高越可疑）:")
+    nodes_order = ['Vault', 'Tx1', 'Tx2', 'Mixer', 'Attacker', 'UserTx', 'UserWallet']
+    for node in nodes_order:
+        score = scores.get(node, 0.0)
+        tag = "🚨" if node in ['Vault', 'Tx1', 'Tx2', 'Mixer', 'Attacker'] else "✅"
+        print(f"{score:6.4f} | {node:<12} | {tag}")
+# if __name__ == '__main__':
+#     g = nx.DiGraph()
+#     g.add_edges_from([
+#         ('A', 'C', {'weight': 0.6}),
+#         ('A', 'D', {'weight': 0.3}),
+#         ('A', 'E', {'weight': 0.3}),
+#         ('C', 'B', {'weight': 1.0}),
+#         ('D', 'F', {'weight': 1.0}),
+#         ('F', 'B', {'weight': 1.0}),
+#         ('E', 'G', {'weight': 1.0}),
+#         ('G', 'F', {'weight': 0.2}),
+#         ('G', 'H', {'weight': 0.8}),
+#         ('H', 'B', {'weight': 1.0}),
+#     ])
+#     sources = {'B'}
+#     x = leak_diffusion(g, sources)
+#     print(x)
+#
+#     top_k = 5
+#     x_rank = sorted(list(x.items()), key=lambda item: item[1], reverse=True)
+#     sub_g = g.subgraph([node for node, _ in x_rank[:top_k]])
+#     for u, v, attr in sub_g.edges(data=True):
+#         print('{}->{}, {}'.format(u, v, attr))

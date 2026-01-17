@@ -153,6 +153,8 @@ if __name__ == '__main__':
     parser.add_argument('--lr', type=float, default=0.001)
     parser.add_argument('--weight_decay', type=float, default=5e-4)
     parser.add_argument('--p_norm', type=int, default=6)
+    parser.add_argument('--leakage', action='store_true', default=True)
+    parser.add_argument('--mapping', action='store_true', default=True)
     args = parser.parse_args()
 
     train(
